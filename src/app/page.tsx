@@ -1,4 +1,6 @@
 import { Container } from "@/components/container";
+import { GameCard } from "@/components/GameCard";
+import { Input } from "@/components/input";
 import { GameProps } from "@/utils/types/games";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,10 +17,21 @@ async function getGame() {
   }
 }
 
+async function getGamesData() {
+  try {
+    const res = await fetch(`${process.env.NEXT_API_URL}/next-api/?api=games`, { next: { revalidate: 320 } })
+
+    return res.json()
+  } catch (err) {
+    throw new Error('Filed to fetch data')
+  }
+}
+
 
 export default async function Home() {
   const thunderGame: GameProps = await getGame()
-  console.log(thunderGame)
+  const data: GameProps[] = await getGamesData();
+  console.log(data)
 
 
   return (
@@ -46,6 +59,15 @@ export default async function Home() {
 
           </section>
         </Link>
+        <Input />
+        <h2 className="text-lg font-bold mt-8 mb-5">
+          Jogos para conhecer
+        </h2>
+        <section className="grid gap-7  sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ">
+          {data.map((item) => (
+            <GameCard key={item.id} data={item}/>
+          ))}
+        </section>
       </Container>
 
     </main>
