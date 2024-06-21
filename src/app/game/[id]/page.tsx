@@ -2,9 +2,53 @@ import { Container } from "@/components/container";
 import { GameCard } from "@/components/GameCard";
 import { Label } from "@/components/label";
 import { GameProps } from "@/utils/types/games";
+import { Metadata } from "next";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 
+interface PropsParams {
+    params: {
+        id: string
+    }
+}
+
+export async function generateMetadata({ params }: PropsParams): Promise<Metadata> {
+    try {
+        const response: GameProps = await fetch(`${process.env.NEXT_API_URL}/next-api/?api=game&id=${params.id}`, { next: { revalidate: 60 } })
+            .then((res) => res.json())
+            .catch(() => {
+                return {
+                    title: "DalyGames - Descubra jogos incríveis."
+                }
+            })
+
+        return {
+            title: response.title,
+            description: `${response.description.slice(0, 100)}...`,
+            openGraph: {
+                title: response.title,
+                images: [response.image_url]
+            },
+            robots: {
+                index: true,
+                follow: true,
+                nocache: true,
+                googleBot: {
+                    index: true,
+                    follow: true,
+                    noimageindex: true,
+                }
+            },
+
+        }
+    }
+    catch (err) {
+        return {
+            title: "DalyGames - Descubra jogos incríveis."
+        }
+    }
+
+}
 
 
 async function getData(id: string) {
