@@ -18,6 +18,7 @@ export function GameCard({data}: GameCardProps) {
                         alt={data.title}
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 44vw"
                         fill={true}
+                        priority={true}
                         quality={100}
                         className="rounded-lg object-cover"
                     />
